@@ -43,7 +43,7 @@ define('MOVIEWATCH_REQUIREMENTS', [
 // Changelog (letzten 5 Versionen)
 define('MOVIEWATCH_CHANGELOG', [
     '1.0.1' => [
-        'date' => '2025-07-05',
+        'date' => '2025-07-20',
         'type' => 'minor',
         'changes' => [
             'Added rating system (like/neutral/dislike)',
