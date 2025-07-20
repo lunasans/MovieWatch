@@ -2,8 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Meine Filme</title>
-  <link rel="stylesheet" href="css/output.css">
+  <title>MovieWatchList</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#3367D6">
