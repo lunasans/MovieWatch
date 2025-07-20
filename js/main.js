@@ -21,15 +21,63 @@ const displayThemeButtons = () => {
     const btnContainer = document.getElementById("themeSwitcher");
     if (!btnContainer) return;
     
+    // Aktuelles Theme aus localStorage laden
+    const savedTheme = localStorage.getItem('movieWatchTheme');
+    let currentThemeBackground = themes[0].background; // Default
+    if (savedTheme) {
+        currentThemeBackground = JSON.parse(savedTheme).background;
+    }
+    
     themes.forEach((theme, index) => {
         const div = document.createElement("div");
         div.className = "theme-btn";
         div.style.background = `linear-gradient(135deg, ${theme.primaryColor}, ${theme.accentColor})`;
-        div.title = `Theme ${index + 1}`;
+        div.title = `Theme ${index + 1}: ${getThemeName(theme.background)}`;
+        
+        // Markiere aktives Theme
+        if (theme.background === currentThemeBackground) {
+            div.classList.add('active');
+        }
+        
+        div.addEventListener("click", () => {
+            // Entferne 'active' Klasse von allen Buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Füge 'active' Klasse zum geklickten Button hinzu
+            div.classList.add('active');
+            
+            // Theme setzen
+            setTheme(theme);
+            
+            // Footer Theme-Anzeige aktualisieren
+            updateFooterTheme(theme.background);
+        });
+        
         btnContainer.appendChild(div);
-        div.addEventListener("click", () => setTheme(theme));
     });
 };
+
+// Hilfsfunktion für Theme-Namen
+function getThemeName(background) {
+    const themeNames = {
+        '#1a1a2e': 'Standard',
+        '#461220': 'Romantic',
+        '#192A51': 'Ocean', 
+        '#2d1b69': 'Royal',
+        '#0c5460': 'Forest'
+    };
+    return themeNames[background] || 'Custom';
+}
+
+// Footer Theme-Anzeige aktualisieren
+function updateFooterTheme(background) {
+    const currentThemeEl = document.getElementById('currentTheme');
+    if (currentThemeEl) {
+        currentThemeEl.textContent = getThemeName(background);
+    }
+}
 
 // Variables
 let currentMovieId = null;
