@@ -193,6 +193,9 @@ require 'header.php';
 <!-- Modals -->
 <?php require 'inc/modals.php'; ?>
 
+<!-- Footer -->
+<?php require 'inc/footer.php'; ?>
+
 <script src="js/main.js"></script>
 </body>
 </html>
