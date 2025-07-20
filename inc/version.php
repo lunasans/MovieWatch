@@ -13,7 +13,7 @@ define('MOVIEWATCH_RELEASE_DATE', '20. Juli 2025');
 // Build Information
 define('MOVIEWATCH_BUILD_TYPE', 'Release'); // Release, Beta, Alpha, Development
 define('MOVIEWATCH_BRANCH', 'main');
-define('MOVIEWATCH_COMMIT', 'a7f3b2c'); // Git commit hash (ersten 7 Zeichen)
+define('MOVIEWATCH_COMMIT', 'f345e0f'); // Git commit hash (ersten 7 Zeichen)
 
 // Feature Flags
 define('MOVIEWATCH_FEATURES', [
