@@ -1,97 +1,91 @@
-    // Beim Laden prüfen
+// Dark Mode funktionalität
 if (localStorage.getItem('dark-mode') === 'true') {
-  document.documentElement.classList.add('dark');
-  document.getElementById('darkModeSwitch').checked = true;
+  document.documentElement.setAttribute('data-theme', 'dark');
+  if (document.getElementById('darkModeSwitch')) {
+    document.getElementById('darkModeSwitch').checked = true;
+  }
 }
 
-// Event-Listener
-document.getElementById('darkModeSwitch').addEventListener('change', function() {
-  if (this.checked) {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('dark-mode', 'true');
-  } else {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('dark-mode', 'false');
+// Event-Listener für Dark Mode Toggle
+document.addEventListener('DOMContentLoaded', function() {
+  const darkModeSwitch = document.getElementById('darkModeSwitch');
+  if (darkModeSwitch) {
+    darkModeSwitch.addEventListener('change', function() {
+      if (this.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('dark-mode', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('dark-mode', 'false');
+      }
+    });
   }
 });
 
-    function searchMovies(query) {
-      fetch('search.php?q=' + encodeURIComponent(query))
-        .then(response => response.text())
-        .then(html => {
-          document.getElementById('film-list').innerHTML = html;
-
-        });
-    }
-
-    let currentMovieId = null;
-
-    function openModal(id, title, count, date) {
-      currentMovieId = id;
-      document.getElementById('modalTitle').value = title;
-      document.getElementById('modalCount').value = count;
-      if (date) {
-      const d = new Date(date);
-      const iso = d.toISOString().split('T')[0];
-      document.getElementById('modalDate').value = iso;
-      } else {
-      document.getElementById('modalDate').value = '';
-      }
-      const modal = document.getElementById('editModal');
-      const content = document.getElementById('modalContent');
-      modal.style.display = 'flex';
-      content.classList.add('fade-enter');
-      requestAnimationFrame(() => {
-        content.classList.add('fade-enter-active');
-      });
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('editModal');
-      const content = document.getElementById('modalContent');
-      content.classList.remove('fade-enter', 'fade-enter-active');
-      modal.style.display = 'none';
-    }
-
-    function openModal(id, title, count, date, tags = []) {
-      currentMovieId = id;
-      document.getElementById('modalTitle').value = title;
-      document.getElementById('modalCount').value = count;
-      document.getElementById('modalDate').value = date ? date.split('T')[0] : '';
-
-      if (window.tagifyEdit) {
-        tagifyEdit.removeAllTags();
-        tagifyEdit.addTags(tags);
-      }
-
-  document.getElementById('editModal').style.display = 'flex';
+// Suche
+function searchMovies(query) {
+  fetch('search.php?q=' + encodeURIComponent(query))
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('film-list').innerHTML = html;
+    });
 }
 
-    function closeAddModal() {
-      const modal = document.getElementById('addModal');
-      const content = document.getElementById('addModalContent');
-      content.classList.remove('fade-enter', 'fade-enter-active');
-      modal.style.display = 'none';
-    }
+let currentMovieId = null;
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-        if (!toast) return;
+// Modal öffnen/schließen
+function openModal(id, title, count, date, tags = []) {
+  currentMovieId = id;
+  document.getElementById('modalTitle').value = title;
+  document.getElementById('modalCount').value = count;
+  document.getElementById('modalDate').value = date ? date.split('T')[0] : '';
 
-        toast.textContent = message;
-        toast.style.display = 'block';
+  if (window.tagifyEdit) {
+    tagifyEdit.removeAllTags();
+    tagifyEdit.addTags(tags);
+  }
 
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
-    } 
+  document.getElementById('editModal').classList.add('is-active');
+}
 
+function closeModal() {
+  document.getElementById('editModal').classList.remove('is-active');
+}
 
-   function saveModalData() {
+function openAddModal() {
+  document.getElementById('addModal').classList.add('is-active');
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('is-active');
+  // Felder leeren
+  document.getElementById('addModalTitle').value = '';
+  document.getElementById('addModalTags').value = '';
+}
+
+// Toast Notifications
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add('show');
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 300);
+  }, 3000);
+} 
+
+// Modal Daten speichern
+function saveModalData() {
   const title = document.getElementById('modalTitle').value.trim();
   const count = parseInt(document.getElementById('modalCount').value);
   const date = document.getElementById('modalDate').value;
-  const tags = editTagify.value.map(tag => tag.value); // Nur Werte extrahieren
+  const tags = editTagify ? editTagify.value.map(tag => tag.value) : [];
 
   if (!title) {
     alert("Bitte gib einen Titel ein.");
@@ -123,7 +117,7 @@ document.getElementById('darkModeSwitch').addEventListener('change', function() 
   });
 }
 
-
+// Neuen Film hinzufügen
 function saveAddModal() {
   const title = document.getElementById('addModalTitle').value.trim();
   const tags = document.getElementById('addModalTags').value;
@@ -144,54 +138,65 @@ function saveAddModal() {
       closeAddModal();
       showToast('Film hinzugefügt!');
 
+      // Neuen Film zur Liste hinzufügen
+      const filmList = document.getElementById('film-list');
       const div = document.createElement('div');
       div.id = 'movie-' + data.id;
-      div.className = "bg-white dark:bg-gray-800 p-4 rounded shadow hover:shadow-lg hover:scale-[1.02] transform transition duration-200 flex justify-between items-center";
+      div.className = 'card movie-card hover-lift';
 
       div.innerHTML = `
-        <div>
-          <h2 id="title-${data.id}" class="text-lg font-semibold text-gray-800 dark:text-gray-100">${title}</h2>
-          <p id="info-${data.id}" class="text-gray-600 text-sm dark:text-gray-300">0x gesehen</p>
-          <p id="tags-${data.id}" class="text-sm text-blue-500 mt-1">Tags: ${tags}</p>
+        <div class="movie-info">
+          <h2 id="title-${data.id}">${title}</h2>
+          <p id="info-${data.id}" class="text-gray">0x gesehen</p>
         </div>
-        <div class="flex space-x-2">
-          <button onclick="openModal(${data.id}, '${title.replace(/'/g,"\\'")}', 0, null)"
-            class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transform hover:scale-105 transition">
-            ✏️
-          </button>
-          <button onclick="deleteMovie(${data.id})"
-            class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transform hover:scale-105 transition">
-            🗑️
-          </button>
+        <div class="movie-actions">
+          <div class="rating-buttons">
+            <button onclick="rateMovie(${data.id}, 'like')" class="rating-btn like" id="like-btn-${data.id}">
+              👍 <span id="like-count-${data.id}">0</span>
+            </button>
+            <button onclick="rateMovie(${data.id}, 'neutral')" class="rating-btn neutral" id="neutral-btn-${data.id}">
+              😐 <span id="neutral-count-${data.id}">0</span>
+            </button>
+            <button onclick="rateMovie(${data.id}, 'dislike')" class="rating-btn dislike" id="dislike-btn-${data.id}">
+              👎 <span id="dislike-count-${data.id}">0</span>
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openModal(${data.id}, '${title.replace(/'/g,"\\'")}', 0, null)"
+              class="btn btn-success btn-small hover-scale">✏️</button>
+            <button onclick="deleteMovie(${data.id})"
+              class="btn btn-danger btn-small hover-scale">🗑️</button>
+          </div>
         </div>`;
 
-      document.querySelector('.lg\\:col-span-2').prepend(div);
+      filmList.prepend(div);
     } else {
       alert('Fehler beim Speichern');
     }
   });
 }
 
+// Film löschen
+function deleteMovie(id) {
+  if (!confirm('Wirklich löschen?')) return;
 
-    function deleteMovie(id) {
-      if (!confirm('Wirklich löschen?')) return;
-
-      fetch('delete_movie.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('movie-' + id).remove();
-          showToast('Film gelöscht!');
-        } else {
-          alert('Fehler beim Löschen');
-        }
-      });
+  fetch('delete_movie.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('movie-' + id).remove();
+      showToast('Film gelöscht!');
+    } else {
+      alert('Fehler beim Löschen');
     }
+  });
+}
 
+// Film bewerten
 function rateMovie(id, type) {
   const likeBtn = document.getElementById('like-btn-' + id);
   const neutralBtn = document.getElementById('neutral-btn-' + id);
@@ -216,31 +221,35 @@ function rateMovie(id, type) {
       dislikeBtn.disabled = true;
 
       // Alle Buttons optisch zurücksetzen
-      likeBtn.classList.remove('scale-110', 'text-green-700');
-      neutralBtn.classList.remove('scale-110', 'text-gray-700');
-      dislikeBtn.classList.remove('scale-110', 'text-red-700');
+      likeBtn.classList.remove('active');
+      neutralBtn.classList.remove('active');
+      dislikeBtn.classList.remove('active');
 
       // Active-Button markieren
       if (type === 'like') {
-        likeBtn.classList.add('scale-110', 'text-green-700');
+        likeBtn.classList.add('active');
       } else if (type === 'neutral') {
-        neutralBtn.classList.add('scale-110', 'text-gray-700');
+        neutralBtn.classList.add('active');
       } else if (type === 'dislike') {
-        dislikeBtn.classList.add('scale-110', 'text-red-700');
+        dislikeBtn.classList.add('active');
       }
 
-      showToast('Film wurde Bewertet!');
+      showToast('Film wurde bewertet!');
     } else {
       alert(data.message || 'Fehler beim Bewerten');
     }
   });
 }
 
+// Counter Animation
 function animateCounter(elementId, newValue) {
   const el = document.getElementById(elementId);
+  if (!el) return;
+  
   const oldValue = parseInt(el.textContent);
   const diff = newValue - oldValue;
   if (diff === 0) return;
+  
   let current = oldValue;
   const step = diff > 0 ? 1 : -1;
 
@@ -251,50 +260,42 @@ function animateCounter(elementId, newValue) {
   }, 30);
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const tagInputs = [document.getElementById('addModalTags'), document.getElementById('modalTags')].filter(Boolean);
-
-  const res = await fetch('get_tags.php');
-  const tagList = await res.json(); // erwartet: [{value: 'Action'}, {value: 'Drama'}, ...]
-
-  tagInputs.forEach(input => {
-    new Tagify(input, {
-      whitelist: tagList.map(tag => tag.value),
-      dropdown: {
-        enabled: 0,
-        classname: "tags-look",
-        maxItems: 10
-      }
-    });
-  });
-});
-
+// Tagify Setup
 let editTagify;
 
-function openModal(id, title, count, date, tags = []) {
-  currentMovieId = id;
-  document.getElementById("modalTitle").value = title;
-  document.getElementById("modalCount").value = count;
-  document.getElementById("modalDate").value = date || '';
-
-  const tagInput = document.getElementById("modalTags");
-  tagInput.value = '';
-  if (editTagify) editTagify.destroy();
-
-  editTagify = new Tagify(tagInput, {
-    whitelist: [],
-    enforceWhitelist: false,
-    originalInputValueFormat: valuesArr => valuesArr.map(tag => tag.value)
-  });
-
-  // Falls Tags vorhanden: setzen
-  if (tags && Array.isArray(tags)) {
-    editTagify.addTags(tags);
+document.addEventListener('DOMContentLoaded', async () => {
+  // Tags laden
+  try {
+    const res = await fetch('get_tags.php');
+    const tagList = await res.json();
+    
+    // Tag-Inputs initialisieren
+    const addTagInput = document.getElementById('addModalTags');
+    const editTagInput = document.getElementById('modalTags');
+    
+    if (addTagInput) {
+      new Tagify(addTagInput, {
+        whitelist: tagList.map(tag => tag.value),
+        dropdown: {
+          enabled: 0,
+          classname: "tags-look",
+          maxItems: 10
+        }
+      });
+    }
+    
+    if (editTagInput) {
+      editTagify = new Tagify(editTagInput, {
+        whitelist: tagList.map(tag => tag.value),
+        dropdown: {
+          enabled: 0,
+          classname: "tags-look", 
+          maxItems: 10
+        },
+        originalInputValueFormat: valuesArr => valuesArr.map(tag => tag.value)
+      });
+    }
+  } catch (error) {
+    console.error('Fehler beim Laden der Tags:', error);
   }
-
-  document.getElementById("editModal").classList.add("is-active");
-}
-
-function closeModal() {
-  document.getElementById("editModal").classList.remove("is-active");
-}
+});

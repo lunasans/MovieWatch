@@ -19,30 +19,28 @@ foreach ($movies as $movie):
     $count = $row['COUNT(*)'];
     $lastSeen = $row['MAX(watched_at)'];
 ?>
-  <div class="bg-white dark:bg-gray-800 p-4 rounded shadow hover:shadow-lg hover:scale-[1.02] transform transition duration-200 flex justify-between items-center">
-    <div>
-      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-        <?= htmlspecialchars($movie['title']) ?>
-      </h2>
-      <p class="text-gray-600 text-sm dark:text-gray-300">
+  <div id="movie-<?= $movie['id'] ?>" class="card movie-card hover-lift">
+    <div class="movie-info">
+      <h2 id="title-<?= $movie['id'] ?>"><?= htmlspecialchars($movie['title']) ?></h2>
+      <p id="info-<?= $movie['id'] ?>" class="text-gray">
         <?= $count ?>x gesehen
         <?php if ($lastSeen): ?>
           – Zuletzt: <?= date("d.m.Y", strtotime($lastSeen)) ?>
         <?php endif; ?>
       </p>
     </div>
-    <div class="flex space-x-2">
+    <div class="movie-actions">
       <button onclick="openModal(
           <?= $movie['id'] ?>,
           '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>',
           <?= $count ?>,
           <?= $lastSeen ? "'".substr($lastSeen, 0, 10)."'" : "null" ?>
       )"
-        class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transform hover:scale-105 transition">
+        class="btn btn-success btn-small hover-scale">
         ✏️
       </button>
       <button onclick="deleteMovie(<?= $movie['id'] ?>)"
-        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transform hover:scale-105 transition">
+        class="btn btn-danger btn-small hover-scale">
         🗑️
       </button>
     </div>

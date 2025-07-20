@@ -39,53 +39,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <title>Login</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="has-background-light">
-  <section class="section">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-4">
-          <form method="post" class="box">
-            <h1 class="title is-4 has-text-centered">Login</h1>
+<body class="min-h-screen flex justify-center items-center">
+  <div class="container">
+    <div class="flex justify-center">
+      <div class="w-full" style="max-width: 400px;">
+        <form method="post" class="card">
+          <h1 class="text-2xl font-bold text-center mb-4">Login</h1>
 
-            <?php if ($error): ?>
-              <div class="notification is-danger">
-                <?= htmlspecialchars($error) ?>
-              </div>
-            <?php endif; ?>
-
-            <div class="field">
-              <label class="label">Benutzername</label>
-              <div class="control">
-                <input class="input" type="text" name="username" required>
-              </div>
+          <?php if ($error): ?>
+            <div class="p-4 mb-4 rounded" style="background-color: var(--color-red); color: white;">
+              <?= htmlspecialchars($error) ?>
             </div>
+          <?php endif; ?>
 
-            <div class="field">
-              <label class="label">Passwort</label>
-              <div class="control">
-                <input class="input" type="password" name="password" required>
-              </div>
-            </div>
+          <div class="field">
+            <label class="label">Benutzername</label>
+            <input class="input" type="text" name="username" required>
+          </div>
 
-            <div class="field">
-              <label class="checkbox">
-                <input type="checkbox" name="stay_logged_in" style="margin-right: 6px;">
-                Angemeldet bleiben
-              </label>
-            </div>
+          <div class="field">
+            <label class="label">Passwort</label>
+            <input class="input" type="password" name="password" required>
+          </div>
 
-            <div class="field">
-              <div class="control">
-                <button class="button is-primary is-fullwidth">Anmelden</button>
-              </div>
-            </div>
+          <div class="field">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="stay_logged_in">
+              <span class="text-sm">Angemeldet bleiben</span>
+            </label>
+          </div>
 
-          </form>
-        </div>
+          <div class="field">
+            <button class="btn btn-primary w-full">Anmelden</button>
+          </div>
+
+        </form>
       </div>
     </div>
-  </section>
+  </div>
 </body>
 </html>

@@ -29,33 +29,35 @@ $logs = $stmt->fetchAll();
 <head>
   <meta charset="UTF-8" />
   <title>Gesehen am bearbeiten</title>
-  <link rel="stylesheet" href="css/output.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen p-6">
-  <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-4 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-      <?= htmlspecialchars($movie['title']) ?> – Gesehen am
-    </h1>
-    <ul id="log-list">
-      <?php foreach ($logs as $log): ?>
-        <li id="log-<?= $log['id'] ?>" class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-2">
-            <input type="date" value="<?= $log['watched_at'] ?>"
-                   class="border p-1 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
-                   id="date-<?= $log['id'] ?>">
-            <button onclick="saveDate(<?= $log['id'] ?>)"
-                    class="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600 transition">
-              💾 Speichern
+<body class="min-h-screen p-6">
+  <div class="container">
+    <div style="max-width: 600px; margin: 0 auto;" class="card">
+      <h1 class="text-2xl font-bold mb-4">
+        <?= htmlspecialchars($movie['title']) ?> – Gesehen am
+      </h1>
+      <ul id="log-list">
+        <?php foreach ($logs as $log): ?>
+          <li id="log-<?= $log['id'] ?>" class="flex justify-between items-center mb-2 p-2 rounded" style="background-color: var(--bg-tertiary);">
+            <div class="flex items-center gap-2">
+              <input type="date" value="<?= $log['watched_at'] ?>"
+                     class="input" style="width: auto;"
+                     id="date-<?= $log['id'] ?>">
+              <button onclick="saveDate(<?= $log['id'] ?>)"
+                      class="btn btn-success btn-small">
+                💾 Speichern
+              </button>
+            </div>
+            <button onclick="deleteLog(<?= $log['id'] ?>)"
+                    class="btn btn-danger btn-small">
+              🗑️ Löschen
             </button>
-          </div>
-          <button onclick="deleteLog(<?= $log['id'] ?>)"
-                  class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600 transition">
-            🗑️ Löschen
-          </button>
-        </li>
-      <?php endforeach; ?>
-    </ul>
-    <a href="index.php" class="text-blue-500 hover:underline mt-4 inline-block">Zurück</a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+      <a href="index.php" class="text-blue inline-block mt-4">← Zurück</a>
+    </div>
   </div>
 
   <script>

@@ -13,35 +13,32 @@ require 'header.php';
 
 <section class="section">
   <div class="container">
-    <div class="level mb-5">
-      <div class="level-left">
-        <h1 class="title">🎬 Meine Filme</h1>
-      </div>
-      <div class="level-right">
-        <form method="post">
-          <label class="checkbox mr-4">
-            <input type="checkbox" id="darkModeSwitch"> Darkmode
-          </label>
-          <a href="logout.php" class="button is-danger is-light">Logout</a>
-        </form>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="title">🎬 Meine Filme</h1>
+      <div class="flex items-center gap-4">
+        <label class="dark-mode-toggle">
+          <input type="checkbox" id="darkModeSwitch" class="toggle-input">
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Dark Mode</span>
+        </label>
+        <a href="logout.php" class="btn btn-danger">Logout</a>
       </div>
     </div>
 
     <!-- Hinzufügen-Button -->
     <div class="mb-4">
-      <button onclick="openAddModal()" class="button is-primary">+ Film hinzufügen</button>
+      <button onclick="openAddModal()" class="btn btn-primary">+ Film hinzufügen</button>
     </div>
 
     <!-- Suchfeld -->
-    <div class="field mb-5">
-      <div class="control">
-        <input id="search" class="input" type="text" placeholder="🔍 Filme suchen..." oninput="searchMovies(this.value)">
-      </div>
+    <div class="field mb-6">
+      <input id="search" class="input" type="text" placeholder="🔍 Filme suchen..." oninput="searchMovies(this.value)">
     </div>
 
-    <!-- Grid -->
-    <div class="columns is-multiline">
-      <div class="column is-two-thirds">
+    <!-- Grid Layout -->
+    <div class="grid lg-grid-cols-3">
+      <!-- Filme Liste -->
+      <div id="film-list">
         <?php foreach ($movies as $movie): ?>
           <?php
           $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM watch_logs WHERE movie_id = ?");
@@ -52,50 +49,65 @@ require 'header.php';
           $stmt3->execute([$movie['id']]);
           $lastLog = $stmt3->fetch();
           ?>
-          <div class="box">
-            <div class="level">
-              <div class="level-left">
-                <h2 id="title-<?= $movie['id'] ?>" class="title is-5"><?= htmlspecialchars($movie['title']) ?></h2>
+          <div id="movie-<?= $movie['id'] ?>" class="card movie-card">
+            <div class="movie-info">
+              <h2 id="title-<?= $movie['id'] ?>"><?= htmlspecialchars($movie['title']) ?></h2>
+              <p id="info-<?= $movie['id'] ?>" class="text-gray">
+                <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
+              </p>
+            </div>
+            <div class="movie-actions">
+              <!-- Rating Buttons -->
+              <div class="rating-buttons">
+                <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" 
+                        class="rating-btn like" id="like-btn-<?= $movie['id'] ?>">
+                  👍 <span id="like-count-<?= $movie['id'] ?>"><?= (int)$movie['likes'] ?></span>
+                </button>
+                <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" 
+                        class="rating-btn neutral" id="neutral-btn-<?= $movie['id'] ?>">
+                  😐 <span id="neutral-count-<?= $movie['id'] ?>"><?= (int)$movie['neutral'] ?></span>
+                </button>
+                <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" 
+                        class="rating-btn dislike" id="dislike-btn-<?= $movie['id'] ?>">
+                  👎 <span id="dislike-count-<?= $movie['id'] ?>"><?= (int)$movie['dislikes'] ?></span>
+                </button>
               </div>
-              <div class="level-right buttons are-small">
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" class="button is-success" id="like-btn-<?= $movie['id'] ?>">
-                  👍 <span id="like-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['likes'] ?></span>
-                </button>
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" class="button is-warning" id="neutral-btn-<?= $movie['id'] ?>">
-                  😐 <span id="neutral-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['neutral'] ?></span>
-                </button>
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" class="button is-danger" id="dislike-btn-<?= $movie['id'] ?>">
-                  👎 <span id="dislike-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['dislikes'] ?></span>
-                </button>
-                <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" class="button is-info">✏️</button>
-                <button onclick="deleteMovie(<?= $movie['id'] ?>)" class="button is-danger">🗑️</button>
+              
+              <!-- Action Buttons -->
+              <div class="flex gap-2">
+                <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" 
+                        class="btn btn-success btn-small">✏️</button>
+                <button onclick="deleteMovie(<?= $movie['id'] ?>)" 
+                        class="btn btn-danger btn-small">🗑️</button>
               </div>
             </div>
-            <p id="info-<?= $movie['id'] ?>" class="has-text-grey is-size-7 mt-2">
-              <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
-            </p>
           </div>
         <?php endforeach; ?>
       </div>
 
-      <!-- Statistik -->
-      <div class="column is-one-third">
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-link"><?= $totalMovies ?></p>
-          <p class="subtitle is-6">Filme insgesamt</p>
+      <!-- Statistik Sidebar -->
+      <div class="flex flex-col gap-4">
+        <div class="stat-card">
+          <div class="stat-number stat-blue"><?= $totalMovies ?></div>
+          <div class="stat-label">Filme insgesamt</div>
         </div>
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-success"><?= $totalWatches ?></p>
-          <p class="subtitle is-6">Sichtungen insgesamt</p>
+        <div class="stat-card">
+          <div class="stat-number stat-green"><?= $totalWatches ?></div>
+          <div class="stat-label">Sichtungen insgesamt</div>
         </div>
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-purple"><?= $todayWatches ?></p>
-          <p class="subtitle is-6">Heute geguckt</p>
+        <div class="stat-card">
+          <div class="stat-number stat-purple"><?= $todayWatches ?></div>
+          <div class="stat-label">Heute geguckt</div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast" style="display: none;"></div>
+
+<?php require 'inc/modals.php'; ?>
 
 <script src="js/main.js"></script>
 </body>
