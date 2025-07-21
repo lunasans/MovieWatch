@@ -65,7 +65,7 @@ define('MOVIEWATCH_CHANGELOG', [
             'Improved mobile responsiveness',
             'Enhanced rating system with animations',
             'Added elegant footer with version information',
-            'Improved error handling in API endpoints', 
+            'Improved error handling in API endpoints',
             'Fixed JSON parsing issues',
             'Enhanced theme persistence',
             'Added Konami code easter egg'
@@ -74,24 +74,27 @@ define('MOVIEWATCH_CHANGELOG', [
 ]);
 
 // Helper Functions
-function getMovieWatchVersion() {
+function getMovieWatchVersion()
+{
     return MOVIEWATCH_VERSION;
 }
 
-function getMovieWatchVersionFull() {
+function getMovieWatchVersionFull()
+{
     $version = MOVIEWATCH_VERSION;
     $codename = MOVIEWATCH_CODENAME;
     $buildType = MOVIEWATCH_BUILD_TYPE;
     $buildDate = MOVIEWATCH_BUILD_DATE;
-    
+
     if ($buildType !== 'Release') {
         return "{$version}-{$buildType} \"{$codename}\" (Build {$buildDate})";
     }
-    
+
     return "{$version} \"{$codename}\"";
 }
 
-function getMovieWatchBuildInfo() {
+function getMovieWatchBuildInfo()
+{
     return [
         'version' => MOVIEWATCH_VERSION,
         'codename' => MOVIEWATCH_CODENAME,
@@ -104,24 +107,27 @@ function getMovieWatchBuildInfo() {
     ];
 }
 
-function isFeatureEnabled($feature) {
+function isFeatureEnabled($feature)
+{
     return MOVIEWATCH_FEATURES[$feature] ?? false;
 }
 
-function getLatestChangelog($limit = 3) {
+function getLatestChangelog($limit = 3)
+{
     return array_slice(MOVIEWATCH_CHANGELOG, 0, $limit, true);
 }
 
-function checkSystemRequirements() {
+function checkSystemRequirements()
+{
     $requirements = MOVIEWATCH_REQUIREMENTS;
     $results = [
         'php' => version_compare(PHP_VERSION, $requirements['php_min'], '>='),
         'mysql' => true, // Wird später implementiert
         'overall' => true
     ];
-    
+
     $results['overall'] = $results['php'] && $results['mysql'];
-    
+
     return $results;
 }
 

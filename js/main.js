@@ -20,41 +20,41 @@ const setTheme = (theme) => {
 const displayThemeButtons = () => {
     const btnContainer = document.getElementById("themeSwitcher");
     if (!btnContainer) return;
-    
+
     // Aktuelles Theme aus localStorage laden
     const savedTheme = localStorage.getItem('movieWatchTheme');
     let currentThemeBackground = themes[0].background; // Default
     if (savedTheme) {
         currentThemeBackground = JSON.parse(savedTheme).background;
     }
-    
+
     themes.forEach((theme, index) => {
         const div = document.createElement("div");
         div.className = "theme-btn";
         div.style.background = `linear-gradient(135deg, ${theme.primaryColor}, ${theme.accentColor})`;
         div.title = `Theme ${index + 1}: ${getThemeName(theme.background)}`;
-        
+
         // Markiere aktives Theme
         if (theme.background === currentThemeBackground) {
             div.classList.add('active');
         }
-        
+
         div.addEventListener("click", () => {
             // Entferne 'active' Klasse von allen Buttons
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Füge 'active' Klasse zum geklickten Button hinzu
             div.classList.add('active');
-            
+
             // Theme setzen
             setTheme(theme);
-            
+
             // Footer Theme-Anzeige aktualisieren
             updateFooterTheme(theme.background);
         });
-        
+
         btnContainer.appendChild(div);
     });
 };
@@ -64,7 +64,7 @@ function getThemeName(background) {
     const themeNames = {
         '#1a1a2e': 'Standard',
         '#461220': 'Romantic',
-        '#192A51': 'Ocean', 
+        '#192A51': 'Ocean',
         '#2d1b69': 'Royal',
         '#0c5460': 'Forest'
     };
@@ -94,7 +94,7 @@ function initDarkMode() {
         darkModeSwitch.checked = true;
     }
 
-    darkModeSwitch.addEventListener('change', function() {
+    darkModeSwitch.addEventListener('change', function () {
         if (this.checked) {
             localStorage.setItem('dark-mode', 'true');
             // Optionally switch to a dark theme
@@ -125,7 +125,7 @@ function searchMovies(query) {
 // Modal Funktionen
 function openModal(id, title, count, date, tags = []) {
     currentMovieId = id;
-    
+
     document.getElementById('modalTitle').value = title;
     document.getElementById('modalCount').value = count;
     document.getElementById('modalDate').value = date ? date.split('T')[0] : '';
@@ -153,10 +153,10 @@ function openAddModal() {
     if (addTagify) {
         addTagify.removeAllTags();
     }
-    
+
     document.getElementById('addModal').classList.add('is-active');
     document.body.style.overflow = 'hidden';
-    
+
     // Focus auf Titel-Feld
     setTimeout(() => {
         document.getElementById('addModalTitle').focus();
@@ -180,15 +180,15 @@ function showToast(message, type = 'info') {
 
     // Remove existing classes
     toast.className = 'toast';
-    
+
     // Add type class
     toast.classList.add(`toast-${type}`);
-    
+
     toast.innerHTML = `
         <i class="bi bi-${getToastIcon(type)}"></i>
         ${message}
     `;
-    
+
     toast.classList.add('show');
 
     setTimeout(() => {
@@ -197,7 +197,7 @@ function showToast(message, type = 'info') {
 }
 
 function getToastIcon(type) {
-    switch(type) {
+    switch (type) {
         case 'success': return 'check-circle';
         case 'error': return 'exclamation-triangle';
         case 'warning': return 'exclamation-triangle';
@@ -228,38 +228,38 @@ function saveModalData() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: currentMovieId, title, count, date, tags })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            // UI aktualisieren
-            const titleEl = document.getElementById('title-' + currentMovieId);
-            const infoEl = document.getElementById('info-' + currentMovieId);
-            
-            if (titleEl) titleEl.textContent = title;
-            
-            if (infoEl) {
-                let info = count + 'x gesehen';
-                if (date) {
-                    const parts = date.split('-');
-                    info += ' – Zuletzt: ' + parts[2] + '.' + parts[1] + '.' + parts[0];
-                }
-                infoEl.textContent = info;
-            }
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // UI aktualisieren
+                const titleEl = document.getElementById('title-' + currentMovieId);
+                const infoEl = document.getElementById('info-' + currentMovieId);
 
-            closeModal();
-            showToast('Film erfolgreich aktualisiert!', 'success');
-        } else {
-            showToast(data.message || 'Fehler beim Speichern', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Save error:', error);
-        showToast('Netzwerkfehler beim Speichern', 'error');
-    })
-    .finally(() => {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = originalText;
-    });
+                if (titleEl) titleEl.textContent = title;
+
+                if (infoEl) {
+                    let info = count + 'x gesehen';
+                    if (date) {
+                        const parts = date.split('-');
+                        info += ' – Zuletzt: ' + parts[2] + '.' + parts[1] + '.' + parts[0];
+                    }
+                    infoEl.textContent = info;
+                }
+
+                closeModal();
+                showToast('Film erfolgreich aktualisiert!', 'success');
+            } else {
+                showToast(data.message || 'Fehler beim Speichern', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Save error:', error);
+            showToast('Netzwerkfehler beim Speichern', 'error');
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        });
 }
 
 // Neuen Film hinzufügen
@@ -283,49 +283,49 @@ function saveAddModal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, tags })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            closeAddModal();
-            showToast('Film erfolgreich hinzugefügt!', 'success');
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                closeAddModal();
+                showToast('Film erfolgreich hinzugefügt!', 'success');
 
-            // Neuen Film zur Liste hinzufügen
-            const filmList = document.getElementById('film-list');
-            if (filmList) {
-                const movieHtml = createMovieCardHtml(data.id, title, 0, null, tags);
-                filmList.insertAdjacentHTML('afterbegin', movieHtml);
-                
-                // Animation für neuen Film
-                const newMovie = document.getElementById('movie-' + data.id);
-                if (newMovie) {
-                    newMovie.style.opacity = '0';
-                    newMovie.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        newMovie.style.transition = 'all 0.3s ease';
-                        newMovie.style.opacity = '1';
-                        newMovie.style.transform = 'translateY(0)';
-                    }, 100);
+                // Neuen Film zur Liste hinzufügen
+                const filmList = document.getElementById('film-list');
+                if (filmList) {
+                    const movieHtml = createMovieCardHtml(data.id, title, 0, null, tags);
+                    filmList.insertAdjacentHTML('afterbegin', movieHtml);
+
+                    // Animation für neuen Film
+                    const newMovie = document.getElementById('movie-' + data.id);
+                    if (newMovie) {
+                        newMovie.style.opacity = '0';
+                        newMovie.style.transform = 'translateY(-20px)';
+                        setTimeout(() => {
+                            newMovie.style.transition = 'all 0.3s ease';
+                            newMovie.style.opacity = '1';
+                            newMovie.style.transform = 'translateY(0)';
+                        }, 100);
+                    }
                 }
+            } else {
+                showToast('Fehler beim Hinzufügen', 'error');
             }
-        } else {
-            showToast('Fehler beim Hinzufügen', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Add error:', error);
-        showToast('Netzwerkfehler beim Hinzufügen', 'error');
-    })
-    .finally(() => {
-        addBtn.disabled = false;
-        addBtn.innerHTML = originalText;
-    });
+        })
+        .catch(error => {
+            console.error('Add error:', error);
+            showToast('Netzwerkfehler beim Hinzufügen', 'error');
+        })
+        .finally(() => {
+            addBtn.disabled = false;
+            addBtn.innerHTML = originalText;
+        });
 }
 
 // HTML für neue Movie Card erstellen
 function createMovieCardHtml(id, title, count, lastDate, tags) {
     const lastInfo = lastDate ? ` – Zuletzt: ${formatDate(lastDate)}` : '';
     const tagsInfo = tags ? ` | Tags: ${tags}` : '';
-    
+
     return `
         <div id="movie-${id}" class="card movie-card">
             <div class="movie-info">
@@ -374,29 +374,29 @@ function deleteMovie(id) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const movieEl = document.getElementById('movie-' + id);
-            if (movieEl) {
-                // Animation beim Löschen
-                movieEl.style.transition = 'all 0.3s ease';
-                movieEl.style.opacity = '0';
-                movieEl.style.transform = 'translateX(-100%)';
-                
-                setTimeout(() => {
-                    movieEl.remove();
-                }, 300);
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const movieEl = document.getElementById('movie-' + id);
+                if (movieEl) {
+                    // Animation beim Löschen
+                    movieEl.style.transition = 'all 0.3s ease';
+                    movieEl.style.opacity = '0';
+                    movieEl.style.transform = 'translateX(-100%)';
+
+                    setTimeout(() => {
+                        movieEl.remove();
+                    }, 300);
+                }
+                showToast('Film erfolgreich gelöscht!', 'success');
+            } else {
+                showToast('Fehler beim Löschen', 'error');
             }
-            showToast('Film erfolgreich gelöscht!', 'success');
-        } else {
-            showToast('Fehler beim Löschen', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Delete error:', error);
-        showToast('Netzwerkfehler beim Löschen', 'error');
-    });
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            showToast('Netzwerkfehler beim Löschen', 'error');
+        });
 }
 
 // Film bewerten
@@ -410,46 +410,46 @@ function rateMovie(id, type) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, type })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            // Zähler aktualisieren
-            animateCounter('like-count-' + id, data.likes);
-            animateCounter('neutral-count-' + id, data.neutral);
-            animateCounter('dislike-count-' + id, data.dislikes);
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Zähler aktualisieren
+                animateCounter('like-count-' + id, data.likes);
+                animateCounter('neutral-count-' + id, data.neutral);
+                animateCounter('dislike-count-' + id, data.dislikes);
 
-            // Active-Status aktualisieren
-            [likeBtn, neutralBtn, dislikeBtn].forEach(btn => {
-                if (btn) btn.classList.remove('active');
-            });
+                // Active-Status aktualisieren
+                [likeBtn, neutralBtn, dislikeBtn].forEach(btn => {
+                    if (btn) btn.classList.remove('active');
+                });
 
-            // Active-Button markieren
-            const activeBtn = type === 'like' ? likeBtn : 
-                             type === 'neutral' ? neutralBtn : dislikeBtn;
-            if (activeBtn) {
-                activeBtn.classList.add('active');
+                // Active-Button markieren
+                const activeBtn = type === 'like' ? likeBtn :
+                    type === 'neutral' ? neutralBtn : dislikeBtn;
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+
+                showToast('Bewertung gespeichert!', 'success');
+            } else {
+                showToast(data.message || 'Fehler beim Bewerten', 'error');
             }
-
-            showToast('Bewertung gespeichert!', 'success');
-        } else {
-            showToast(data.message || 'Fehler beim Bewerten', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Rating error:', error);
-        showToast('Netzwerkfehler beim Bewerten', 'error');
-    });
+        })
+        .catch(error => {
+            console.error('Rating error:', error);
+            showToast('Netzwerkfehler beim Bewerten', 'error');
+        });
 }
 
 // Counter Animation
 function animateCounter(elementId, newValue) {
     const el = document.getElementById(elementId);
     if (!el) return;
-    
+
     const oldValue = parseInt(el.textContent) || 0;
     const diff = newValue - oldValue;
     if (diff === 0) return;
-    
+
     let current = oldValue;
     const step = diff > 0 ? 1 : -1;
     const duration = Math.min(Math.abs(diff) * 50, 500);
@@ -499,7 +499,7 @@ function formatDate(dateString) {
 
 // Keyboard Shortcuts
 function initKeyboardShortcuts() {
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         // ESC zum Schließen von Modals
         if (e.key === 'Escape') {
             if (document.getElementById('editModal').classList.contains('is-active')) {
@@ -512,13 +512,13 @@ function initKeyboardShortcuts() {
                 closeDetailModal();
             }
         }
-        
+
         // Ctrl+N für neuen Film
         if (e.ctrlKey && e.key === 'n') {
             e.preventDefault();
             openAddModal();
         }
-        
+
         // Ctrl+F für Suche
         if (e.ctrlKey && e.key === 'f') {
             e.preventDefault();
@@ -536,7 +536,7 @@ async function initTagify() {
         const res = await fetch('get_tags.php');
         const tagList = await res.json();
         const whitelist = tagList.map(tag => tag.value);
-        
+
         // Add Modal Tagify
         const addTagInput = document.getElementById('addModalTags');
         if (addTagInput) {
@@ -549,7 +549,7 @@ async function initTagify() {
                 enforceWhitelist: false
             });
         }
-        
+
         // Edit Modal Tagify
         const editTagInput = document.getElementById('modalTags');
         if (editTagInput) {
@@ -570,7 +570,7 @@ async function initTagify() {
 
 // Modal Click Outside to Close
 function initModalClickOutside() {
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal')) {
             if (e.target.id === 'editModal') closeModal();
             if (e.target.id === 'addModal') closeAddModal();
@@ -580,20 +580,20 @@ function initModalClickOutside() {
 }
 
 // Initialization
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Theme System
     displayThemeButtons();
     const savedTheme = localStorage.getItem('movieWatchTheme');
     if (savedTheme) {
         setTheme(JSON.parse(savedTheme));
     }
-    
+
     // Initialize components
     initDarkMode();
     initTagify();
     initKeyboardShortcuts();
     initModalClickOutside();
-    
+
     // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
@@ -611,6 +611,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
-    
+
     console.log('MovieWatch initialized successfully!');
 });

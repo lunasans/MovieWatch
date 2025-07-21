@@ -125,12 +125,13 @@ try {
     $topRatedMovies = [];
     $popularTags = [];
     $moviesByStatus = [];
-    
+
     error_log('MovieWatch func.php error: ' . $e->getMessage());
 }
 
 // Hilfsfunktionen
-function getMovieById($pdo, $id) {
+function getMovieById($pdo, $id)
+{
     $stmt = $pdo->prepare("
         SELECT 
             m.*,
@@ -148,7 +149,8 @@ function getMovieById($pdo, $id) {
     return $stmt->fetch();
 }
 
-function getMovieTags($pdo, $movieId) {
+function getMovieTags($pdo, $movieId)
+{
     $stmt = $pdo->prepare("
         SELECT t.id, t.name, t.color, t.slug
         FROM tags t
@@ -160,7 +162,8 @@ function getMovieTags($pdo, $movieId) {
     return $stmt->fetchAll();
 }
 
-function getWatchLogs($pdo, $movieId) {
+function getWatchLogs($pdo, $movieId)
+{
     $stmt = $pdo->prepare("
         SELECT *
         FROM watch_logs
@@ -171,24 +174,29 @@ function getWatchLogs($pdo, $movieId) {
     return $stmt->fetchAll();
 }
 
-function formatDate($date) {
-    if (!$date) return '';
+function formatDate($date)
+{
+    if (!$date)
+        return '';
     return date('d.m.Y', strtotime($date));
 }
 
-function formatDateTime($datetime) {
-    if (!$datetime) return '';
+function formatDateTime($datetime)
+{
+    if (!$datetime)
+        return '';
     return date('d.m.Y H:i', strtotime($datetime));
 }
 
-function getWatchStatusBadge($status) {
+function getWatchStatusBadge($status)
+{
     $badges = [
         'not_watched' => ['class' => 'secondary', 'text' => 'Nicht gesehen'],
         'watched' => ['class' => 'success', 'text' => 'Gesehen'],
         'want_to_watch' => ['class' => 'primary', 'text' => 'Watchlist'],
         'watching' => ['class' => 'warning', 'text' => 'Schaue gerade']
     ];
-    
+
     return $badges[$status] ?? ['class' => 'secondary', 'text' => 'Unbekannt'];
 }
 ?>

@@ -19,19 +19,21 @@ if (!isset($_SESSION['user_id'])) {
 try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
-    
-    $movieId = (int)($data['id'] ?? 0);
+
+    $movieId = (int) ($data['id'] ?? 0);
     $vote = trim($data['type'] ?? '');
-    $userId = (int)$_SESSION['user_id'];
-    
-    if ($movieId <= 0) throw new Exception('Ungültige Film-ID');
-    if (!in_array($vote, ['like', 'neutral', 'dislike'])) throw new Exception('Ungültiger Vote-Typ');
-    
+    $userId = (int) $_SESSION['user_id'];
+
+    if ($movieId <= 0)
+        throw new Exception('Ungültige Film-ID');
+    if (!in_array($vote, ['like', 'neutral', 'dislike']))
+        throw new Exception('Ungültiger Vote-Typ');
+
     // Vote einfügen oder aktualisieren
     $stmt = $pdo->prepare("SELECT id FROM movie_votes WHERE movie_id = ? AND user_id = ?");
     $stmt->execute([$movieId, $userId]);
     $existing = $stmt->fetch();
-    
+
     if ($existing) {
         $stmt = $pdo->prepare("UPDATE movie_votes SET vote = ? WHERE movie_id = ? AND user_id = ?");
         $stmt->execute([$vote, $movieId, $userId]);
@@ -39,7 +41,7 @@ try {
         $stmt = $pdo->prepare("INSERT INTO movie_votes (movie_id, user_id, vote) VALUES (?, ?, ?)");
         $stmt->execute([$movieId, $userId, $vote]);
     }
-    
+
     // Aktuelle Zähler abrufen
     $stmt = $pdo->prepare("
         SELECT 
@@ -51,15 +53,15 @@ try {
     ");
     $stmt->execute([$movieId]);
     $counts = $stmt->fetch();
-    
+
     echo json_encode([
         'success' => true,
         'message' => 'Bewertung gespeichert',
-        'likes' => (int)$counts['likes'],
-        'neutral' => (int)$counts['neutral'],
-        'dislikes' => (int)$counts['dislikes']
+        'likes' => (int) $counts['likes'],
+        'neutral' => (int) $counts['neutral'],
+        'dislikes' => (int) $counts['dislikes']
     ]);
-    
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

@@ -23,7 +23,7 @@ require 'header.php';
                 <i class="bi bi-film"></i>
                 MovieWatch
             </h1>
-            
+
             <div class="header-actions">
                 <!-- Dark Mode Toggle -->
                 <label class="dark-mode-toggle">
@@ -31,13 +31,13 @@ require 'header.php';
                     <span class="toggle-switch"></span>
                     <span style="font-size: 0.9rem; font-weight: 500;">Dark Mode</span>
                 </label>
-                
+
                 <!-- Actions -->
                 <button onclick="openAddModal()" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i>
                     Film hinzufügen
                 </button>
-                
+
                 <a href="logout.php" class="btn btn-danger">
                     <i class="bi bi-box-arrow-right"></i>
                     Logout
@@ -64,13 +64,8 @@ require 'header.php';
 
     <!-- Search -->
     <div class="search-container">
-        <input 
-            id="search" 
-            class="search-input" 
-            type="text" 
-            placeholder="🔍 Filme suchen..." 
-            oninput="searchMovies(this.value)"
-        >
+        <input id="search" class="search-input" type="text" placeholder="🔍 Filme suchen..."
+            oninput="searchMovies(this.value)">
     </div>
 
     <!-- Main Content -->
@@ -91,43 +86,43 @@ require 'header.php';
                     <div class="movie-info">
                         <h2 id="title-<?= $movie['id'] ?>"><?= htmlspecialchars($movie['title']) ?></h2>
                         <p id="info-<?= $movie['id'] ?>">
-                            <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
+                            <?= $count ?>x
+                            gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
                         </p>
                     </div>
-                    
+
                     <div class="movie-actions">
                         <!-- Rating Buttons -->
                         <div class="rating-buttons">
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" 
-                                    class="rating-btn like" id="like-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" class="rating-btn like"
+                                id="like-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-hand-thumbs-up"></i>
-                                <span id="like-count-<?= $movie['id'] ?>"><?= (int)$movie['likes'] ?></span>
+                                <span id="like-count-<?= $movie['id'] ?>"><?= (int) $movie['likes'] ?></span>
                             </button>
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" 
-                                    class="rating-btn neutral" id="neutral-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" class="rating-btn neutral"
+                                id="neutral-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-dash-circle"></i>
-                                <span id="neutral-count-<?= $movie['id'] ?>"><?= (int)$movie['neutral'] ?></span>
+                                <span id="neutral-count-<?= $movie['id'] ?>"><?= (int) $movie['neutral'] ?></span>
                             </button>
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" 
-                                    class="rating-btn dislike" id="dislike-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" class="rating-btn dislike"
+                                id="dislike-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-hand-thumbs-down"></i>
-                                <span id="dislike-count-<?= $movie['id'] ?>"><?= (int)$movie['dislikes'] ?></span>
+                                <span id="dislike-count-<?= $movie['id'] ?>"><?= (int) $movie['dislikes'] ?></span>
                             </button>
                         </div>
-                        
+
                         <!-- Action Buttons -->
                         <div class="flex gap-2">
-                            <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" 
-                                    class="btn btn-secondary btn-small">
+                            <button
+                                onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)"
+                                class="btn btn-secondary btn-small">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <a href="movie.php?id=<?= $movie['id'] ?>" 
-                               class="btn btn-secondary btn-small" 
-                               title="Sichtungen bearbeiten">
+                            <a href="movie.php?id=<?= $movie['id'] ?>" class="btn btn-secondary btn-small"
+                                title="Sichtungen bearbeiten">
                                 <i class="bi bi-calendar-event"></i>
                             </a>
-                            <button onclick="deleteMovie(<?= $movie['id'] ?>)" 
-                                    class="btn btn-danger btn-small">
+                            <button onclick="deleteMovie(<?= $movie['id'] ?>)" class="btn btn-danger btn-small">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -158,7 +153,7 @@ require 'header.php';
                     </button>
                 </div>
             </div>
-            
+
             <div class="card">
                 <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
                     <i class="bi bi-graph-up"></i>
@@ -198,4 +193,5 @@ require 'header.php';
 
 <script src="js/main.js"></script>
 </body>
+
 </html>

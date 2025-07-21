@@ -10,7 +10,7 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        
+
         <div class="modal-body">
             <div class="form-group">
                 <label class="form-label">
@@ -44,7 +44,7 @@
                 <input type="text" id="modalTags" class="form-input" placeholder="Tags durch Komma getrennt">
             </div>
         </div>
-        
+
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal()">
                 <i class="bi bi-x-circle"></i>
@@ -70,7 +70,7 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        
+
         <div class="modal-body">
             <div class="form-group">
                 <label class="form-label">
@@ -86,12 +86,13 @@
                     Tags
                 </label>
                 <input type="text" id="addModalTags" class="form-input" placeholder="z.B. Action, Drama, Komödie">
-                <small style="color: var(--clr-text-muted); font-size: 0.8rem; margin-top: var(--spacing-xs); display: block;">
+                <small
+                    style="color: var(--clr-text-muted); font-size: 0.8rem; margin-top: var(--spacing-xs); display: block;">
                     Tags durch Komma getrennt eingeben
                 </small>
             </div>
         </div>
-        
+
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeAddModal()">
                 <i class="bi bi-x-circle"></i>
@@ -117,11 +118,11 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        
+
         <div class="modal-body" id="detailModalContent">
             <!-- Wird dynamisch gefüllt -->
         </div>
-        
+
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeDetailModal()">
                 <i class="bi bi-x-circle"></i>

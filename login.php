@@ -36,23 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - MovieWatch</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    
+
     <style>
         :root {
             --background: #1a1a2e;
             --color: #ffffff;
             --primary-color: #0f3460;
             --accent-color: #3498db;
-            
+
             --clr-text: var(--color);
             --clr-text-muted: rgba(255, 255, 255, 0.7);
             --clr-background: var(--background);
@@ -61,22 +62,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --clr-surface: rgba(255, 255, 255, 0.1);
             --clr-border: rgba(255, 255, 255, 0.2);
             --clr-shadow: rgba(0, 0, 0, 0.3);
-            
+
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
             --glass-backdrop: blur(20px);
-            
+
             --radius-md: 1rem;
             --radius-lg: 1.5rem;
             --spacing-sm: 0.5rem;
             --spacing-md: 1rem;
             --spacing-lg: 1.5rem;
             --spacing-xl: 2rem;
-            
+
             --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -119,9 +122,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         @keyframes ripple {
-            0% { transform: scale(0.8); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(0.8); opacity: 1; }
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
         }
 
         .login-container {
@@ -142,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -291,12 +306,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 margin: var(--spacing-md);
                 padding: var(--spacing-lg);
             }
-            
+
             .circle-one {
                 height: 8rem;
                 width: 8rem;
             }
-            
+
             .circle-two {
                 height: 15rem;
                 width: 15rem;
@@ -304,6 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
     <!-- Animierte Hintergrund-Kreise -->
     <div class="circle circle-one"></div>
@@ -324,26 +340,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="post" action="">
             <div class="form-group">
-                <input 
-                    class="form-input" 
-                    type="text" 
-                    name="username" 
-                    placeholder="Benutzername" 
-                    value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
-                    required
-                    autocomplete="username"
-                >
+                <input class="form-input" type="text" name="username" placeholder="Benutzername"
+                    value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required autocomplete="username">
             </div>
 
             <div class="form-group">
-                <input 
-                    class="form-input" 
-                    type="password" 
-                    name="password" 
-                    placeholder="Passwort" 
-                    required
-                    autocomplete="current-password"
-                >
+                <input class="form-input" type="password" name="password" placeholder="Passwort" required
+                    autocomplete="current-password">
             </div>
 
             <div class="checkbox-group">
@@ -391,9 +394,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             displayThemeButtons();
-            
+
             // Gespeichertes Theme laden
             const savedTheme = localStorage.getItem('movieWatchTheme');
             if (savedTheme) {
@@ -402,11 +405,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Form-Enhancement
             const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 const submitBtn = form.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation: spin 1s linear infinite; margin-right: 0.5rem;"></i>Anmeldung...';
-                
+
                 setTimeout(() => {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right" style="margin-right: 0.5rem;"></i>Anmelden';
@@ -424,4 +427,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.head.appendChild(style);
     </script>
 </body>
+
 </html>
