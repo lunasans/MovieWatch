@@ -5,10 +5,10 @@
  */
 
 // Version Information
-define('MOVIEWATCH_VERSION', '1.0.1');
+define('MOVIEWATCH_VERSION', '1.0.2');
 define('MOVIEWATCH_CODENAME', 'Nebula');
-define('MOVIEWATCH_BUILD_DATE', '2025.07.20');
-define('MOVIEWATCH_RELEASE_DATE', '20. Juli 2025');
+define('MOVIEWATCH_BUILD_DATE', '2025.07.21');
+define('MOVIEWATCH_RELEASE_DATE', '21. Juli 2025');
 
 // Build Information
 define('MOVIEWATCH_BUILD_TYPE', 'Release'); // Release, Beta, Alpha, Development
@@ -69,6 +69,23 @@ define('MOVIEWATCH_CHANGELOG', [
             'Fixed JSON parsing issues',
             'Enhanced theme persistence',
             'Added Konami code easter egg'
+        ]
+    ],
+
+    '1.0.2' => [
+        'date' => '2025-07-21',
+        'type' => 'minor',
+        'changes' => [
+            'Enhanced tag validation and cleanup in get_tags.php.',
+            'Improved UI for movie listing and search with tag display in index.php and search.php.',
+            'Added functionality to load and manage movie tags in main.js and update_movie.php.',  
+            'Introduced get_movie_tags.php for fetching tags associated with a movie.',
+            'Updated modal handling for adding and editing movies with tags.',
+            'Improved error handling and user feedback throughout the application.',
+            'Refactored movie management system for better maintainability and performance.',
+            'Optimized database queries for fetching movie data and tags.',
+            'Improved code structure and organization for better readability.',
+            ''
         ]
     ]
 ]);
