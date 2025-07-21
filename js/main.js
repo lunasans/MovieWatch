@@ -15,6 +15,9 @@ const setTheme = (theme) => {
         root.style.setProperty(`--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
     });
     localStorage.setItem('movieWatchTheme', JSON.stringify(theme));
+    
+    // Tagify Theme auch aktualisieren
+    applyTagifyTheme();
 };
 
 const displayThemeButtons = () => {
@@ -117,16 +120,24 @@ function openModal(id, title, count, date, tags = []) {
     document.getElementById('modalCount').value = count;
     document.getElementById('modalDate').value = date ? date.split('T')[0] : '';
 
-    // Tags laden und setzen - KORRIGIERT
+    // Tags laden und setzen - KORRIGIERT mit Debug-Output
+    console.log('Loading tags for movie:', id);
     loadMovieTags(id).then(movieTags => {
+        console.log('Loaded movie tags:', movieTags);
         if (editTagify) {
             editTagify.removeAllTags();
             if (movieTags && movieTags.length > 0) {
-                editTagify.addTags(movieTags);
+                // Tags als Array von Objekten hinzufügen für bessere Kompatibilität
+                const tagObjects = movieTags.map(tag => ({ value: tag }));
+                editTagify.addTags(tagObjects);
+                console.log('Tags added to editTagify:', tagObjects);
             }
+        } else {
+            console.warn('editTagify not initialized');
         }
     }).catch(error => {
         console.error('Error loading movie tags:', error);
+        showToast('Fehler beim Laden der Tags', 'warning');
     });
 
     document.getElementById('editModal').classList.add('is-active');
@@ -538,9 +549,10 @@ function initKeyboardShortcuts() {
     });
 }
 
-// Tagify Setup - VERBESSERT
+// Tagify Setup - VERBESSERT mit besserem CSS-Support
 async function initTagify() {
     try {
+        console.log('Initializing Tagify...');
         const res = await fetch('get_tags.php');
         if (!res.ok) {
             throw new Error('Failed to fetch tags');
@@ -549,61 +561,206 @@ async function initTagify() {
         const tagList = await res.json();
         availableTags = Array.isArray(tagList) ? tagList.map(tag => tag.value) : [];
         
-        console.log('Loaded tags:', availableTags);
+        console.log('Loaded available tags:', availableTags);
         
-        // Add Modal Tagify
+        // Add Modal Tagify mit verbesserter Konfiguration
         const addTagInput = document.getElementById('addModalTags');
         if (addTagInput) {
             addTagify = new Tagify(addTagInput, {
                 whitelist: availableTags,
                 dropdown: {
-                    enabled: 0,
+                    enabled: 1,
                     maxItems: 10,
-                    closeOnSelect: false
+                    closeOnSelect: false,
+                    highlightFirst: true,
+                    searchKeys: ['value']
                 },
                 enforceWhitelist: false,
                 maxTags: 10,
                 trim: true,
                 duplicates: false,
+                editTags: false,
+                placeholder: 'Tags hinzufügen...',
                 validate: function(tagData) {
                     return tagData.value.length >= 2 && tagData.value.length <= 50;
+                },
+                transformTag: function(tagData) {
+                    tagData.class = 'tag-item';
                 }
             });
             
+            // Event Listeners für besseres Debugging
             addTagify.on('add', function(e) {
-                console.log('Tag added:', e.detail.data.value);
+                console.log('Tag added to add modal:', e.detail.data.value);
             });
+            
+            addTagify.on('remove', function(e) {
+                console.log('Tag removed from add modal:', e.detail.data.value);
+            });
+            
+            console.log('Add modal Tagify initialized successfully');
         }
         
-        // Edit Modal Tagify
+        // Edit Modal Tagify mit verbesserter Konfiguration
         const editTagInput = document.getElementById('modalTags');
         if (editTagInput) {
             editTagify = new Tagify(editTagInput, {
                 whitelist: availableTags,
                 dropdown: {
-                    enabled: 0,
+                    enabled: 1,
                     maxItems: 10,
-                    closeOnSelect: false
+                    closeOnSelect: false,
+                    highlightFirst: true,
+                    searchKeys: ['value']
                 },
                 enforceWhitelist: false,
                 maxTags: 10,
                 trim: true,
                 duplicates: false,
+                editTags: false,
+                placeholder: 'Tags bearbeiten...',
                 validate: function(tagData) {
                     return tagData.value.length >= 2 && tagData.value.length <= 50;
                 },
-                originalInputValueFormat: valuesArr => valuesArr.map(tag => tag.value)
+                transformTag: function(tagData) {
+                    tagData.class = 'tag-item';
+                },
+                originalInputValueFormat: valuesArr => valuesArr.map(tag => tag.value || tag)
             });
             
+            // Event Listeners für besseres Debugging
             editTagify.on('add', function(e) {
-                console.log('Tag added to edit:', e.detail.data.value);
+                console.log('Tag added to edit modal:', e.detail.data.value);
             });
+            
+            editTagify.on('remove', function(e) {
+                console.log('Tag removed from edit modal:', e.detail.data.value);
+            });
+            
+            console.log('Edit modal Tagify initialized successfully');
         }
+        
+        // CSS-Klassen dynamisch anwenden für bessere Theme-Integration
+        applyTagifyTheme();
         
     } catch (error) {
         console.error('Fehler beim Laden der Tags:', error);
         showToast('Fehler beim Laden der Tags', 'warning');
     }
+}
+
+// Neue Funktion: Tagify Theme anwenden
+function applyTagifyTheme() {
+    // CSS-Variablen für aktuelles Theme setzen
+    const savedTheme = localStorage.getItem('movieWatchTheme');
+    if (savedTheme) {
+        const theme = JSON.parse(savedTheme);
+        const root = document.documentElement;
+        
+        // Tagify-spezifische CSS-Variablen setzen
+        root.style.setProperty('--tagify-tag-bg', theme.accentColor);
+        root.style.setProperty('--tagify-tag-hover', theme.primaryColor);
+    }
+    
+    // KRITISCHES FIX: Dropdown-Styles zur Laufzeit setzen
+    setTimeout(() => {
+        const style = document.createElement('style');
+        style.id = 'tagify-dropdown-fix';
+        style.innerHTML = `
+            .tagify__dropdown,
+            .modal .tagify__dropdown,
+            .modal.is-active .tagify__dropdown {
+                background: var(--clr-background, #1a1a2e) !important;
+                border: 2px solid var(--clr-accent, #3498db) !important;
+                color: var(--clr-text, #ffffff) !important;
+                z-index: 999999 !important;
+            }
+            
+            .tagify__dropdown__item,
+            .modal .tagify__dropdown__item {
+                color: var(--clr-text, #ffffff) !important;
+                background: transparent !important;
+                text-shadow: none !important;
+                font-weight: 500 !important;
+            }
+            
+            .tagify__dropdown__item:hover,
+            .tagify__dropdown__item.tagify__dropdown__item--active {
+                background: var(--clr-accent, #3498db) !important;
+                color: #ffffff !important;
+            }
+        `;
+        
+        // Alten Style entfernen falls vorhanden
+        const oldStyle = document.getElementById('tagify-dropdown-fix');
+        if (oldStyle) {
+            oldStyle.remove();
+        }
+        
+        document.head.appendChild(style);
+    }, 100);
+    
+    console.log('Tagify theme applied with dropdown fix');
+}
+
+// Neue Funktion: Dropdown-Styles direkt setzen
+function forceTagifyDropdownStyles() {
+    // Observer für dynamisch erstellte Dropdowns
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1 && node.classList && node.classList.contains('tagify__dropdown')) {
+                        console.log('Tagify dropdown detected, applying styles...');
+                        
+                        // Direkte Style-Anwendung
+                        node.style.background = 'var(--clr-background, #1a1a2e)';
+                        node.style.border = '2px solid var(--clr-accent, #3498db)';
+                        node.style.color = 'var(--clr-text, #ffffff)';
+                        node.style.zIndex = '999999';
+                        node.style.borderRadius = 'var(--radius-md, 1rem)';
+                        node.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.8)';
+                        node.style.maxHeight = '200px';
+                        node.style.overflowY = 'auto';
+                        
+                        // Items innerhalb des Dropdowns stylen
+                        const items = node.querySelectorAll('.tagify__dropdown__item');
+                        items.forEach(item => {
+                            item.style.color = 'var(--clr-text, #ffffff)';
+                            item.style.background = 'transparent';
+                            item.style.padding = '12px 16px';
+                            item.style.borderBottom = '1px solid var(--clr-border, rgba(255,255,255,0.1))';
+                            item.style.fontSize = '0.9rem';
+                            item.style.fontWeight = '500';
+                            item.style.cursor = 'pointer';
+                            item.style.textShadow = 'none';
+                            
+                            // Hover-Event hinzufügen
+                            item.addEventListener('mouseenter', function() {
+                                this.style.background = 'var(--clr-accent, #3498db)';
+                                this.style.color = '#ffffff';
+                            });
+                            
+                            item.addEventListener('mouseleave', function() {
+                                if (!this.classList.contains('tagify__dropdown__item--active')) {
+                                    this.style.background = 'transparent';
+                                    this.style.color = 'var(--clr-text, #ffffff)';
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    // Observer starten
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    console.log('Tagify dropdown observer started');
 }
 
 // Modal Click Outside to Close
@@ -630,7 +787,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize components
     initDarkMode();
-    initTagify();
+    
+    // Tagify initialisieren mit Verzögerung für bessere Theme-Integration
+    setTimeout(() => {
+        initTagify();
+    }, 100);
+    
     initKeyboardShortcuts();
     initModalClickOutside();
     
@@ -648,6 +810,44 @@ document.addEventListener('DOMContentLoaded', function() {
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Zusätzliche Tagify-Anpassungen */
+        .tagify {
+            --tag-bg: var(--clr-accent, #3498db) !important;
+            --tag-hover: var(--clr-primary, #0f3460) !important;
+            --tag-text-color: #ffffff !important;
+            --tag-border-color: var(--clr-accent, #3498db) !important;
+            --tags-border-color: var(--glass-border, rgba(255, 255, 255, 0.2)) !important;
+            --placeholder-color: var(--clr-text-muted, rgba(255, 255, 255, 0.7)) !important;
+        }
+        
+        .tagify__input {
+            color: var(--clr-text, #ffffff) !important;
+        }
+        
+        .tagify__tag {
+            background: var(--clr-accent, #3498db) !important;
+            color: #ffffff !important;
+            border-radius: var(--radius-sm, 0.5rem) !important;
+        }
+        
+        .tagify__tag:hover {
+            background: var(--clr-primary, #0f3460) !important;
+        }
+        
+        .tagify__dropdown {
+            background: var(--glass-bg, rgba(255, 255, 255, 0.1)) !important;
+            backdrop-filter: var(--glass-backdrop, blur(20px)) !important;
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2)) !important;
+        }
+        
+        .tagify__dropdown__item {
+            color: var(--clr-text, #ffffff) !important;
+        }
+        
+        .tagify__dropdown__item:hover {
+            background: var(--clr-surface-hover, rgba(255, 255, 255, 0.15)) !important;
         }
     `;
     document.head.appendChild(style);

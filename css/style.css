@@ -1066,3 +1066,481 @@ body {
     font-size: 0.7rem;
     padding: 1px var(--spacing-xs);
 }
+
+/* MovieWatch - Tagify CSS Fix für Modal-Lesbarkeit */
+
+/* Grundlegende Tagify-Anpassungen für das dunkle Theme */
+.tagify {
+    --tag-bg: var(--clr-accent) !important;
+    --tag-hover: var(--clr-primary) !important;
+    --tag-text-color: #ffffff !important;
+    --tag-text-color--edit: #ffffff !important;
+    --tag-pad: 0.3em 0.5em !important;
+    --tag-border-color: var(--clr-accent) !important;
+    --tags-border-color: var(--glass-border) !important;
+    --placeholder-color: var(--clr-text-muted) !important;
+    --tag-remove-bg: rgba(255, 255, 255, 0.3) !important;
+    --tag-remove-btn-color: #ffffff !important;
+    --tag-invalid-color: #e74c3c !important;
+    --tag-invalid-bg: rgba(231, 76, 60, 0.2) !important;
+    
+    border-radius: var(--radius-md) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-backdrop) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--clr-text) !important;
+    min-height: 45px !important;
+    padding: 4px 8px !important;
+    font-size: 0.9rem !important;
+}
+
+/* Tagify Input Feld */
+.tagify__input {
+    color: var(--clr-text) !important;
+    background: transparent !important;
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+    padding: 0.25em !important;
+}
+
+.tagify__input::before {
+    color: var(--clr-text-muted) !important;
+    font-size: 0.9rem !important;
+}
+
+/* Tagify Focus State */
+.tagify:focus-within {
+    border-color: var(--clr-accent) !important;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+}
+
+/* Individual Tags */
+.tagify__tag {
+    background: var(--clr-accent) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--clr-accent) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.25em 0.5em !important;
+    margin: 0.15em 0.1em !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 4px var(--clr-shadow) !important;
+    transition: all 0.2s ease !important;
+}
+
+.tagify__tag:hover {
+    background: var(--clr-primary) !important;
+    border-color: var(--clr-primary) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px var(--clr-shadow) !important;
+}
+
+/* Tag Text */
+.tagify__tag__text {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+/* Tag Remove Button */
+.tagify__tag__removeBtn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-left: 0.3em !important;
+    font-size: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.tagify__tag__removeBtn:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Tagify Dropdown */
+.tagify__dropdown {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-backdrop) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 8px 32px var(--clr-shadow) !important;
+    z-index: 1001 !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+}
+
+.tagify__dropdown__wrapper {
+    max-height: 200px !important;
+}
+
+/* Dropdown Items */
+.tagify__dropdown__item {
+    color: var(--clr-text) !important;
+    background: transparent !important;
+    padding: 0.5em 0.75em !important;
+    border-bottom: 1px solid var(--clr-border) !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.tagify__dropdown__item:hover,
+.tagify__dropdown__item--active {
+    background: var(--clr-surface-hover) !important;
+    color: var(--clr-text) !important;
+}
+
+.tagify__dropdown__item:last-child {
+    border-bottom: none !important;
+}
+
+/* Invalid Tags */
+.tagify__tag--invalid {
+    background: rgba(231, 76, 60, 0.8) !important;
+    border-color: #e74c3c !important;
+    color: #ffffff !important;
+}
+
+/* Loading State */
+.tagify--loading .tagify__input::before {
+    content: 'Lade Tags...' !important;
+    color: var(--clr-text-muted) !important;
+}
+
+/* Readonly State */
+.tagify[readonly] {
+    cursor: default !important;
+    background: var(--clr-surface) !important;
+    opacity: 0.7 !important;
+}
+
+.tagify[readonly] .tagify__tag__removeBtn {
+    display: none !important;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .tagify {
+        font-size: 0.8rem !important;
+        min-height: 40px !important;
+    }
+    
+    .tagify__tag {
+        font-size: 0.75rem !important;
+        padding: 0.2em 0.4em !important;
+    }
+    
+    .tagify__input {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Custom Scrollbar für Dropdown */
+.tagify__dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tagify__dropdown::-webkit-scrollbar-track {
+    background: var(--clr-surface);
+    border-radius: 3px;
+}
+
+.tagify__dropdown::-webkit-scrollbar-thumb {
+    background: var(--clr-accent);
+    border-radius: 3px;
+}
+
+.tagify__dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--clr-primary);
+}
+
+/* Animation für neue Tags */
+.tagify__tag {
+    animation: tagFadeIn 0.3s ease-out;
+}
+
+@keyframes tagFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Spezielle Anpassungen für verschiedene Themes */
+.theme-romantic .tagify__tag {
+    background: #E94560 !important;
+    border-color: #E94560 !important;
+}
+
+.theme-romantic .tagify__tag:hover {
+    background: #d73651 !important;
+}
+
+.theme-ocean .tagify__tag {
+    background: #967AA1 !important;
+    border-color: #967AA1 !important;
+}
+
+.theme-ocean .tagify__tag:hover {
+    background: #846a8f !important;
+}
+
+.theme-royal .tagify__tag {
+    background: #8e44ad !important;
+    border-color: #8e44ad !important;
+}
+
+.theme-royal .tagify__tag:hover {
+    background: #7d3c98 !important;
+}
+
+.theme-forest .tagify__tag {
+    background: #16a085 !important;
+    border-color: #16a085 !important;
+}
+
+.theme-forest .tagify__tag:hover {
+    background: #138d75 !important;
+}
+
+/* MovieWatch - Spezifisches Tagify Dropdown Fix für Lesbarkeit */
+
+/* HOCHSPEZIFISCHE CSS-SELEKTOREN für Tagify Dropdown - überschreibt alles */
+
+/* Modal-spezifische Tagify Styles */
+.modal .tagify,
+.modal.is-active .tagify,
+div[id*="Modal"] .tagify {
+    background: var(--glass-bg) !important;
+    border: 2px solid var(--clr-accent) !important;
+    color: var(--clr-text) !important;
+}
+
+/* Dropdown Container - höchste Priorität */
+.tagify__dropdown,
+.tagify__dropdown.tagify__dropdown--text,
+.tagify__dropdown.tagify__dropdown--select,
+.modal .tagify__dropdown,
+.modal.is-active .tagify__dropdown,
+div[id*="Modal"] .tagify__dropdown {
+    background: var(--clr-background) !important;
+    border: 2px solid var(--clr-accent) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    z-index: 99999 !important;
+    backdrop-filter: blur(20px) !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+/* Dropdown Wrapper */
+.tagify__dropdown__wrapper,
+.modal .tagify__dropdown__wrapper,
+.modal.is-active .tagify__dropdown__wrapper {
+    background: var(--clr-background) !important;
+    border-radius: var(--radius-md) !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+/* Dropdown Items - KRITISCH für Lesbarkeit */
+.tagify__dropdown__item,
+.tagify__dropdown__item.tagify__dropdown__item--active,
+.tagify__dropdown__item:hover,
+.modal .tagify__dropdown__item,
+.modal.is-active .tagify__dropdown__item,
+div[id*="Modal"] .tagify__dropdown__item {
+    color: var(--clr-text) !important;
+    background: transparent !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--clr-border) !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    text-shadow: none !important;
+    font-family: inherit !important;
+}
+
+/* Hover und Active States für Dropdown Items */
+.tagify__dropdown__item:hover,
+.tagify__dropdown__item.tagify__dropdown__item--active,
+.tagify__dropdown__item[aria-selected="true"],
+.modal .tagify__dropdown__item:hover,
+.modal.is-active .tagify__dropdown__item:hover {
+    background: var(--clr-accent) !important;
+    color: #ffffff !important;
+    transform: translateX(4px) !important;
+    border-left: 3px solid var(--clr-primary) !important;
+}
+
+/* Highlighted Text in Dropdown */
+.tagify__dropdown__item .tagify__dropdown__item__text,
+.tagify__dropdown__item strong,
+.tagify__dropdown__item mark {
+    color: inherit !important;
+    background: transparent !important;
+    font-weight: 600 !important;
+}
+
+/* Letztes Item ohne Border */
+.tagify__dropdown__item:last-child {
+    border-bottom: none !important;
+}
+
+/* Empty State */
+.tagify__dropdown__item--hidden,
+.tagify__dropdown__item[style*="display: none"] {
+    display: none !important;
+}
+
+/* Custom Scrollbar für Dropdown */
+.tagify__dropdown::-webkit-scrollbar,
+.tagify__dropdown__wrapper::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+.tagify__dropdown::-webkit-scrollbar-track,
+.tagify__dropdown__wrapper::-webkit-scrollbar-track {
+    background: var(--clr-surface) !important;
+    border-radius: 4px !important;
+}
+
+.tagify__dropdown::-webkit-scrollbar-thumb,
+.tagify__dropdown__wrapper::-webkit-scrollbar-thumb {
+    background: var(--clr-accent) !important;
+    border-radius: 4px !important;
+    border: 1px solid var(--clr-background) !important;
+}
+
+.tagify__dropdown::-webkit-scrollbar-thumb:hover,
+.tagify__dropdown__wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--clr-primary) !important;
+}
+
+/* Input Field in Dropdown Mode */
+.tagify__dropdown .tagify__input,
+.modal .tagify__dropdown .tagify__input {
+    color: var(--clr-text) !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 0.9rem !important;
+}
+
+/* Loading State */
+.tagify__dropdown--loading {
+    opacity: 0.7 !important;
+}
+
+.tagify__dropdown--loading::after {
+    content: 'Tags werden geladen...' !important;
+    display: block !important;
+    padding: 16px !important;
+    text-align: center !important;
+    color: var(--clr-text-muted) !important;
+    font-style: italic !important;
+}
+
+/* No Results State */
+.tagify__dropdown:empty::after {
+    content: 'Keine Tags gefunden' !important;
+    display: block !important;
+    padding: 16px !important;
+    text-align: center !important;
+    color: var(--clr-text-muted) !important;
+    font-style: italic !important;
+}
+
+/* Theme-spezifische Anpassungen */
+
+/* Standard Theme */
+[data-theme="standard"] .tagify__dropdown__item:hover,
+.theme-standard .tagify__dropdown__item:hover {
+    background: #3498db !important;
+}
+
+/* Romantic Theme */
+[data-theme="romantic"] .tagify__dropdown__item:hover,
+.theme-romantic .tagify__dropdown__item:hover {
+    background: #E94560 !important;
+}
+
+/* Ocean Theme */
+[data-theme="ocean"] .tagify__dropdown__item:hover,
+.theme-ocean .tagify__dropdown__item:hover {
+    background: #967AA1 !important;
+}
+
+/* Royal Theme */
+[data-theme="royal"] .tagify__dropdown__item:hover,
+.theme-royal .tagify__dropdown__item:hover {
+    background: #8e44ad !important;
+}
+
+/* Forest Theme */
+[data-theme="forest"] .tagify__dropdown__item:hover,
+.theme-forest .tagify__dropdown__item:hover {
+    background: #16a085 !important;
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 768px) {
+    .tagify__dropdown {
+        max-height: 200px !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 16px !important;
+    }
+    
+    .tagify__dropdown__item {
+        padding: 14px 16px !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Debug Mode - nur für Entwicklung */
+.debug-tagify .tagify__dropdown {
+    border: 3px solid red !important;
+}
+
+.debug-tagify .tagify__dropdown__item {
+    border: 1px solid green !important;
+    background: yellow !important;
+    color: black !important;
+}
+
+/* Force Styles - Notfall-Überschreibung */
+.tagify__dropdown * {
+    box-sizing: border-box !important;
+}
+
+/* Animation für Dropdown */
+.tagify__dropdown {
+    animation: dropdownFadeIn 0.2s ease-out !important;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Ensure dropdown is always on top */
+.tagify__dropdown {
+    position: fixed !important;
+    z-index: 999999 !important;
+}
