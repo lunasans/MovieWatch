@@ -23,7 +23,7 @@ require 'header.php';
                 <i class="bi bi-film"></i>
                 MovieWatch
             </h1>
-
+            
             <div class="header-actions">
                 <!-- Dark Mode Toggle -->
                 <label class="dark-mode-toggle">
@@ -31,13 +31,13 @@ require 'header.php';
                     <span class="toggle-switch"></span>
                     <span style="font-size: 0.9rem; font-weight: 500;">Dark Mode</span>
                 </label>
-
+                
                 <!-- Actions -->
                 <button onclick="openAddModal()" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i>
                     Film hinzufügen
                 </button>
-
+                
                 <a href="logout.php" class="btn btn-danger">
                     <i class="bi bi-box-arrow-right"></i>
                     Logout
@@ -64,8 +64,13 @@ require 'header.php';
 
     <!-- Search -->
     <div class="search-container">
-        <input id="search" class="search-input" type="text" placeholder="🔍 Filme suchen..."
-            oninput="searchMovies(this.value)">
+        <input 
+            id="search" 
+            class="search-input" 
+            type="text" 
+            placeholder="🔍 Filme oder Tags suchen..." 
+            oninput="searchMovies(this.value)"
+        >
     </div>
 
     <!-- Main Content -->
@@ -81,48 +86,62 @@ require 'header.php';
                 $stmt3 = $pdo->prepare("SELECT id, watched_at FROM watch_logs WHERE movie_id = ? ORDER BY watched_at DESC LIMIT 1");
                 $stmt3->execute([$movie['id']]);
                 $lastLog = $stmt3->fetch();
+                
+                // Tags für diesen Film laden
+                $stmt4 = $pdo->prepare("
+                    SELECT t.name 
+                    FROM tags t 
+                    JOIN movie_tags mt ON t.id = mt.tag_id 
+                    WHERE mt.movie_id = ? 
+                    ORDER BY t.name
+                ");
+                $stmt4->execute([$movie['id']]);
+                $movieTags = $stmt4->fetchAll(PDO::FETCH_COLUMN);
                 ?>
                 <div id="movie-<?= $movie['id'] ?>" class="card movie-card">
                     <div class="movie-info">
                         <h2 id="title-<?= $movie['id'] ?>"><?= htmlspecialchars($movie['title']) ?></h2>
                         <p id="info-<?= $movie['id'] ?>">
-                            <?= $count ?>x
-                            gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
+                            <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
+                            <?php if (!empty($movieTags)): ?>
+                                | Tags: <?= htmlspecialchars(implode(', ', $movieTags)) ?>
+                            <?php endif; ?>
                         </p>
                     </div>
-
+                    
                     <div class="movie-actions">
                         <!-- Rating Buttons -->
                         <div class="rating-buttons">
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" class="rating-btn like"
-                                id="like-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" 
+                                    class="rating-btn like" id="like-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-hand-thumbs-up"></i>
-                                <span id="like-count-<?= $movie['id'] ?>"><?= (int) $movie['likes'] ?></span>
+                                <span id="like-count-<?= $movie['id'] ?>"><?= (int)($movie['likes'] ?? 0) ?></span>
                             </button>
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" class="rating-btn neutral"
-                                id="neutral-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" 
+                                    class="rating-btn neutral" id="neutral-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-dash-circle"></i>
-                                <span id="neutral-count-<?= $movie['id'] ?>"><?= (int) $movie['neutral'] ?></span>
+                                <span id="neutral-count-<?= $movie['id'] ?>"><?= (int)($movie['neutral'] ?? 0) ?></span>
                             </button>
-                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" class="rating-btn dislike"
-                                id="dislike-btn-<?= $movie['id'] ?>">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" 
+                                    class="rating-btn dislike" id="dislike-btn-<?= $movie['id'] ?>">
                                 <i class="bi bi-hand-thumbs-down"></i>
-                                <span id="dislike-count-<?= $movie['id'] ?>"><?= (int) $movie['dislikes'] ?></span>
+                                <span id="dislike-count-<?= $movie['id'] ?>"><?= (int)($movie['dislikes'] ?? 0) ?></span>
                             </button>
                         </div>
-
+                        
                         <!-- Action Buttons -->
                         <div class="flex gap-2">
-                            <button
-                                onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)"
-                                class="btn btn-secondary btn-small">
+                            <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" 
+                                    class="btn btn-secondary btn-small">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <a href="movie.php?id=<?= $movie['id'] ?>" class="btn btn-secondary btn-small"
-                                title="Sichtungen bearbeiten">
+                            <a href="movie.php?id=<?= $movie['id'] ?>" 
+                               class="btn btn-secondary btn-small" 
+                               title="Sichtungen bearbeiten">
                                 <i class="bi bi-calendar-event"></i>
                             </a>
-                            <button onclick="deleteMovie(<?= $movie['id'] ?>)" class="btn btn-danger btn-small">
+                            <button onclick="deleteMovie(<?= $movie['id'] ?>)" 
+                                    class="btn btn-danger btn-small">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -153,7 +172,39 @@ require 'header.php';
                     </button>
                 </div>
             </div>
-
+            
+            <!-- Beliebte Tags -->
+            <?php if (!empty($popularTags)): ?>
+            <div class="card">
+                <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
+                    <i class="bi bi-tags"></i>
+                    Beliebte Tags
+                </h3>
+                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-xs);">
+                    <?php foreach (array_slice($popularTags, 0, 8) as $tag): ?>
+                        <span 
+                            class="tag-badge" 
+                            style="
+                                background: <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>20;
+                                color: <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>;
+                                border: 1px solid <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>40;
+                                padding: var(--spacing-xs) var(--spacing-sm);
+                                border-radius: var(--radius-sm);
+                                font-size: 0.75rem;
+                                cursor: pointer;
+                                transition: var(--transition-fast);
+                            "
+                            onclick="searchMovies('<?= htmlspecialchars($tag['name']) ?>')"
+                            title="<?= $tag['usage_count'] ?> Film(e)"
+                        >
+                            <?= htmlspecialchars($tag['name']) ?>
+                            <small style="opacity: 0.7;">(<?= $tag['usage_count'] ?>)</small>
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+            
             <div class="card">
                 <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
                     <i class="bi bi-graph-up"></i>
@@ -192,6 +243,15 @@ require 'header.php';
 <?php require 'inc/footer.php'; ?>
 
 <script src="js/main.js"></script>
-</body>
 
+<style>
+.tag-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--clr-shadow);
+    background: var(--clr-accent) !important;
+    color: white !important;
+}
+</style>
+
+</body>
 </html>
