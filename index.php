@@ -11,92 +11,247 @@ if (!isset($_SESSION['user_id'])) {
 require 'header.php';
 ?>
 
-<section class="section">
-  <div class="container">
-    <div class="level mb-5">
-      <div class="level-left">
-        <h1 class="title">🎬 Meine Filme</h1>
-      </div>
-      <div class="level-right">
-        <form method="post">
-          <label class="checkbox mr-4">
-            <input type="checkbox" id="darkModeSwitch"> Darkmode
-          </label>
-          <a href="logout.php" class="button is-danger is-light">Logout</a>
-        </form>
-      </div>
-    </div>
+<!-- Animierte Hintergrund-Kreise -->
+<div class="circle circle-one"></div>
+<div class="circle circle-two"></div>
 
-    <!-- Hinzufügen-Button -->
-    <div class="mb-4">
-      <button onclick="openAddModal()" class="button is-primary">+ Film hinzufügen</button>
-    </div>
-
-    <!-- Suchfeld -->
-    <div class="field mb-5">
-      <div class="control">
-        <input id="search" class="input" type="text" placeholder="🔍 Filme suchen..." oninput="searchMovies(this.value)">
-      </div>
-    </div>
-
-    <!-- Grid -->
-    <div class="columns is-multiline">
-      <div class="column is-two-thirds">
-        <?php foreach ($movies as $movie): ?>
-          <?php
-          $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM watch_logs WHERE movie_id = ?");
-          $stmt2->execute([$movie['id']]);
-          $count = $stmt2->fetchColumn();
-
-          $stmt3 = $pdo->prepare("SELECT id, watched_at FROM watch_logs WHERE movie_id = ? ORDER BY watched_at DESC LIMIT 1");
-          $stmt3->execute([$movie['id']]);
-          $lastLog = $stmt3->fetch();
-          ?>
-          <div class="box">
-            <div class="level">
-              <div class="level-left">
-                <h2 id="title-<?= $movie['id'] ?>" class="title is-5"><?= htmlspecialchars($movie['title']) ?></h2>
-              </div>
-              <div class="level-right buttons are-small">
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" class="button is-success" id="like-btn-<?= $movie['id'] ?>">
-                  👍 <span id="like-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['likes'] ?></span>
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="app-title">
+                <i class="bi bi-film"></i>
+                MovieWatch
+            </h1>
+            
+            <div class="header-actions">
+                <!-- Dark Mode Toggle -->
+                <label class="dark-mode-toggle">
+                    <input type="checkbox" id="darkModeSwitch" class="toggle-input">
+                    <span class="toggle-switch"></span>
+                    <span style="font-size: 0.9rem; font-weight: 500;">Dark Mode</span>
+                </label>
+                
+                <!-- Actions -->
+                <button onclick="openAddModal()" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Film hinzufügen
                 </button>
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" class="button is-warning" id="neutral-btn-<?= $movie['id'] ?>">
-                  😐 <span id="neutral-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['neutral'] ?></span>
-                </button>
-                <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" class="button is-danger" id="dislike-btn-<?= $movie['id'] ?>">
-                  👎 <span id="dislike-count-<?= $movie['id'] ?>" class="ml-1"><?= (int)$movie['dislikes'] ?></span>
-                </button>
-                <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" class="button is-info">✏️</button>
-                <button onclick="deleteMovie(<?= $movie['id'] ?>)" class="button is-danger">🗑️</button>
-              </div>
+                
+                <a href="logout.php" class="btn btn-danger">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+                </a>
             </div>
-            <p id="info-<?= $movie['id'] ?>" class="has-text-grey is-size-7 mt-2">
-              <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
-            </p>
-          </div>
-        <?php endforeach; ?>
-      </div>
+        </div>
+    </header>
 
-      <!-- Statistik -->
-      <div class="column is-one-third">
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-link"><?= $totalMovies ?></p>
-          <p class="subtitle is-6">Filme insgesamt</p>
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number"><?= $totalMovies ?></div>
+            <div class="stat-label">Filme insgesamt</div>
         </div>
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-success"><?= $totalWatches ?></p>
-          <p class="subtitle is-6">Sichtungen insgesamt</p>
+        <div class="stat-card">
+            <div class="stat-number"><?= $totalWatches ?></div>
+            <div class="stat-label">Sichtungen insgesamt</div>
         </div>
-        <div class="box has-text-centered">
-          <p class="title is-4 has-text-purple"><?= $todayWatches ?></p>
-          <p class="subtitle is-6">Heute geguckt</p>
+        <div class="stat-card">
+            <div class="stat-number"><?= $todayWatches ?></div>
+            <div class="stat-label">Heute geguckt</div>
         </div>
-      </div>
     </div>
-  </div>
-</section>
+
+    <!-- Search -->
+    <div class="search-container">
+        <input 
+            id="search" 
+            class="search-input" 
+            type="text" 
+            placeholder="🔍 Filme oder Tags suchen..." 
+            oninput="searchMovies(this.value)"
+        >
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-grid">
+        <!-- Movies List -->
+        <div class="movies-grid" id="film-list">
+            <?php foreach ($movies as $movie): ?>
+                <?php
+                $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM watch_logs WHERE movie_id = ?");
+                $stmt2->execute([$movie['id']]);
+                $count = $stmt2->fetchColumn();
+
+                $stmt3 = $pdo->prepare("SELECT id, watched_at FROM watch_logs WHERE movie_id = ? ORDER BY watched_at DESC LIMIT 1");
+                $stmt3->execute([$movie['id']]);
+                $lastLog = $stmt3->fetch();
+                
+                // Tags für diesen Film laden
+                $stmt4 = $pdo->prepare("
+                    SELECT t.name 
+                    FROM tags t 
+                    JOIN movie_tags mt ON t.id = mt.tag_id 
+                    WHERE mt.movie_id = ? 
+                    ORDER BY t.name
+                ");
+                $stmt4->execute([$movie['id']]);
+                $movieTags = $stmt4->fetchAll(PDO::FETCH_COLUMN);
+                ?>
+                <div id="movie-<?= $movie['id'] ?>" class="card movie-card">
+                    <div class="movie-info">
+                        <h2 id="title-<?= $movie['id'] ?>"><?= htmlspecialchars($movie['title']) ?></h2>
+                        <p id="info-<?= $movie['id'] ?>">
+                            <?= $count ?>x gesehen<?= $lastLog ? ' – Zuletzt: ' . date("d.m.Y", strtotime($lastLog['watched_at'])) : '' ?>
+                            <?php if (!empty($movieTags)): ?>
+                                | Tags: <?= htmlspecialchars(implode(', ', $movieTags)) ?>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    
+                    <div class="movie-actions">
+                        <!-- Rating Buttons -->
+                        <div class="rating-buttons">
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'like')" 
+                                    class="rating-btn like" id="like-btn-<?= $movie['id'] ?>">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                                <span id="like-count-<?= $movie['id'] ?>"><?= (int)($movie['likes'] ?? 0) ?></span>
+                            </button>
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'neutral')" 
+                                    class="rating-btn neutral" id="neutral-btn-<?= $movie['id'] ?>">
+                                <i class="bi bi-dash-circle"></i>
+                                <span id="neutral-count-<?= $movie['id'] ?>"><?= (int)($movie['neutral'] ?? 0) ?></span>
+                            </button>
+                            <button onclick="rateMovie(<?= $movie['id'] ?>, 'dislike')" 
+                                    class="rating-btn dislike" id="dislike-btn-<?= $movie['id'] ?>">
+                                <i class="bi bi-hand-thumbs-down"></i>
+                                <span id="dislike-count-<?= $movie['id'] ?>"><?= (int)($movie['dislikes'] ?? 0) ?></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2">
+                            <button onclick="openModal(<?= $movie['id'] ?>, '<?= htmlspecialchars($movie['title'], ENT_QUOTES) ?>', <?= $count ?>, <?= $lastLog ? "'" . $lastLog['watched_at'] . "'" : "null" ?>)" 
+                                    class="btn btn-secondary btn-small">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <a href="movie.php?id=<?= $movie['id'] ?>" 
+                               class="btn btn-secondary btn-small" 
+                               title="Sichtungen bearbeiten">
+                                <i class="bi bi-calendar-event"></i>
+                            </a>
+                            <button onclick="deleteMovie(<?= $movie['id'] ?>)" 
+                                    class="btn btn-danger btn-small">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="card">
+                <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
+                    <i class="bi bi-info-circle"></i>
+                    Schnellzugriff
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                    <button onclick="showTopRated()" class="btn btn-secondary w-full">
+                        <i class="bi bi-star-fill"></i>
+                        Top bewertete Filme
+                    </button>
+                    <button onclick="showRecentlyWatched()" class="btn btn-secondary w-full">
+                        <i class="bi bi-clock-history"></i>
+                        Zuletzt gesehen
+                    </button>
+                    <button onclick="showUnwatched()" class="btn btn-secondary w-full">
+                        <i class="bi bi-eye-slash"></i>
+                        Noch nicht gesehen
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Beliebte Tags -->
+            <?php if (!empty($popularTags)): ?>
+            <div class="card">
+                <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
+                    <i class="bi bi-tags"></i>
+                    Beliebte Tags
+                </h3>
+                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-xs);">
+                    <?php foreach (array_slice($popularTags, 0, 8) as $tag): ?>
+                        <span 
+                            class="tag-badge" 
+                            style="
+                                background: <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>20;
+                                color: <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>;
+                                border: 1px solid <?= htmlspecialchars($tag['color'] ?? 'var(--clr-accent)') ?>40;
+                                padding: var(--spacing-xs) var(--spacing-sm);
+                                border-radius: var(--radius-sm);
+                                font-size: 0.75rem;
+                                cursor: pointer;
+                                transition: var(--transition-fast);
+                            "
+                            onclick="searchMovies('<?= htmlspecialchars($tag['name']) ?>')"
+                            title="<?= $tag['usage_count'] ?> Film(e)"
+                        >
+                            <?= htmlspecialchars($tag['name']) ?>
+                            <small style="opacity: 0.7;">(<?= $tag['usage_count'] ?>)</small>
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <div class="card">
+                <h3 style="margin-bottom: var(--spacing-md); color: var(--clr-accent);">
+                    <i class="bi bi-graph-up"></i>
+                    Aktivität
+                </h3>
+                <div style="text-align: center;">
+                    <p style="color: var(--clr-text-muted); margin-bottom: var(--spacing-sm);">
+                        Diese Woche
+                    </p>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--clr-accent);">
+                        <?php
+                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM watch_logs WHERE watched_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+                        $stmt->execute();
+                        echo $stmt->fetchColumn();
+                        ?>
+                    </div>
+                    <p style="color: var(--clr-text-muted); font-size: 0.9rem;">
+                        Filme geschaut
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Theme Switcher -->
+<div class="theme-switcher" id="themeSwitcher"></div>
+
+<!-- Modals -->
+<?php require 'inc/modals.php'; ?>
+
+<!-- Footer -->
+<?php require 'inc/footer.php'; ?>
 
 <script src="js/main.js"></script>
+
+<style>
+.tag-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--clr-shadow);
+    background: var(--clr-accent) !important;
+    color: white !important;
+}
+</style>
+
 </body>
 </html>
